@@ -5,6 +5,7 @@ from typing import List
 import json
 import io
 import csv
+import os
 from datetime import datetime
 from .. import models, database, auth
 from ..schemas import InvoiceResponse, InvoiceListResponse, ExtractedData
@@ -12,6 +13,9 @@ from ..schemas import InvoiceResponse, InvoiceListResponse, ExtractedData
 router = APIRouter()
 
 ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".tiff"}
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 def allowed_file(filename: str):
     return any(filename.lower().endswith(ext) for ext in ALLOWED_EXTENSIONS)
@@ -28,7 +32,7 @@ async def upload_invoices(
             results.append({"filename": file.filename, "status": "failed", "error": "Invalid file type"})
             continue
         
-        filepath = f"backend/uploads/{current_user.id}_{datetime.now().timestamp()}_{file.filename}"
+        filepath = f"{UPLOAD_DIR}/{current_user.id}_{datetime.now().timestamp()}_{file.filename}"
         with open(filepath, "wb") as f:
             content = await file.read()
             f.write(content)
