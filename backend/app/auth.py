@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import os
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
@@ -8,7 +9,7 @@ from sqlalchemy.orm import Session
 from . import models, database
 from .schemas import UserCreate, UserLogin, Token, UserResponse
 
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production") or "default-secret"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -39,7 +40,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        username = payload.get("sub")
         if username is None:
             raise credentials_exception
     except JWTError:
