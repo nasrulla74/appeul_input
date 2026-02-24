@@ -1,12 +1,20 @@
 import base64
 import json
-from openai import OpenAI
-from dotenv import load_dotenv
 import os
+from typing import Optional
 
-load_dotenv()
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def get_client():
+    provider = os.getenv("AI_PROVIDER", "deepseek").lower()
+    
+    if provider == "deepseek":
+        from openai import OpenAI
+        return OpenAI(
+            api_key=os.getenv("DEEPSEEK_API_KEY"),
+            base_url="https://api.deepseek.com/v1"
+        ), "deepseek-chat"
+    else:
+        from openai import OpenAI
+        return OpenAI(api_key=os.getenv("OPENAI_API_KEY")), "gpt-4o"
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
@@ -34,15 +42,17 @@ async def extract_invoice_data(filepath: str):
 - untaxed_amount: The subtotal/untaxed amount (just the number)
 - total_tax: The total tax amount (just the number)
 - invoice_total: The total amount including tax (just the number)
-- company_name: The company/-seller name from the header
+- company_name: The company/seller name from the header
 - company_address: The company address
 - company_tin: The company's Tax Identification Number
 
 If a field is not found, use null. Return ONLY valid JSON, no other text."""
 
+        client, model = get_client()
+
         if filepath.lower().endswith(".pdf"):
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {"role": "system", "content": "You are an expert at extracting data from invoices."},
                     {"role": "user", "content": f"{prompt}\n\nInvoice text:\n{text[:8000]}"}
@@ -52,7 +62,7 @@ If a field is not found, use null. Return ONLY valid JSON, no other text."""
             )
         else:
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {"role": "system", "content": "You are an expert at extracting data from invoices."},
                     {"role": "user", "content": [

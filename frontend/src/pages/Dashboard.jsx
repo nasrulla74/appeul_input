@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { FileText, CheckCircle, XCircle, Upload, Download, LogOut } from 'lucide-react';
+import { FileText, CheckCircle, XCircle, Upload, Download, LogOut, Settings } from 'lucide-react';
 
 const COLORS = ['#10B981', '#EF4444', '#F59E0B'];
 
@@ -56,6 +56,9 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold">Invoice Extractor</h1>
           <div className="flex items-center gap-4">
+            <Link to="/settings" className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
+              <Settings size={20} /> Settings
+            </Link>
             <span className="text-gray-600">{user?.username}</span>
             <button onClick={logout} className="flex items-center gap-2 text-red-600 hover:text-red-700">
               <LogOut size={20} /> Logout

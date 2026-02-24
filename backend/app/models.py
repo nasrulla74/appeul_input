@@ -13,6 +13,19 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     invoices = relationship("Invoice", back_populates="owner")
+    settings = relationship("UserSettings", back_populates="user", uselist=False)
+
+class UserSettings(Base):
+    __tablename__ = "user_settings"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    ai_provider = Column(String, default="deepseek")  # deepseek or openai
+    deepseek_api_key = Column(String, nullable=True)
+    openai_api_key = Column(String, nullable=True)
+    default_model = Column(String, default="deepseek-chat")
+    
+    user = relationship("User", back_populates="settings")
 
 class Invoice(Base):
     __tablename__ = "invoices"
