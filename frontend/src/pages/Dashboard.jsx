@@ -176,4 +176,16 @@ export default function Dashboard() {
                 ))}
                 {invoices.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-c
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                      No invoices found. Upload some invoices to get started.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
